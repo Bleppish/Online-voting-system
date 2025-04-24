@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Election Results</h1>
+  <table id="results">
+    <thead>
+      <tr><th>Candidate</th><th>Votes</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function loadResults() {
+      const response = await fetch('/results');
+      const votes = await response.json();
+      const tbody = document.querySelector('#results tbody');
+      
+      const tally = {};
+      votes.forEach(v => tally[v.choice] = (tally[v.choice] || 0) + 1);
+      
+      tbody.innerHTML = Object.entries(tally)
+        .map(([name, count]) => `<tr><td>${name}</td><td>${count}</td></tr>`)
+        .join('');
+    }
+    loadResults();
+  </script>
+</body>
+</html>
