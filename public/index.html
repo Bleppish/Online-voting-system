@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Voting</title>
+  <title>Vote</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>Vote for Class President</h1>
-  <div class="candidates">
-    <button onclick="vote('Alice')">Alice</button>
-    <button onclick="vote('Bob')">Bob</button>
-  </div>
-  <p id="message"></p>
-
+  <div id="login-status">Not logged in</div>
+  <div id="elections"></div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/keycloak-js@18"></script>
   <script>
-    async function vote(choice) {
-      const response = await fetch('/vote', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ electionId: 1, choice })
+    const keycloak = new Keycloak('keycloak-config.json');
+    
+    keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
+      document.getElementById('login-status').textContent = 
+        `Logged in as ${keycloak.tokenParsed.preferred_username}`;
+      loadElections();
+    });
+
+    async function loadElections() {
+      const response = await fetch('/elections', {
+        headers: { 'Authorization': `Bearer ${keycloak.token}` }
       });
-      document.getElementById('message').textContent = await response.text();
+      const elections = await response.json();
     }
   </script>
 </body>
