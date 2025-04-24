@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Vote</title>
+  <title>Voting</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>Vote for Class President</h1>
-  <button onclick="vote('Alice')">Alice</button> 
-  <button onclick="vote('Bob')">Bob</button>
-  
+  <div class="candidates">
+    <button onclick="vote('Alice')">Alice</button>
+    <button onclick="vote('Bob')">Bob</button>
+  </div>
+  <p id="message"></p>
+
   <script>
-    function vote(choice) {
-      fetch('/vote', {
+    async function vote(choice) {
+      const response = await fetch('/vote', {
         method: 'POST',
-        body: JSON.stringify({ electionId: 1, choice: choice }),
-      }).then(response => alert("Vote failed (probably)")); 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ electionId: 1, choice })
+      });
+      document.getElementById('message').textContent = await response.text();
     }
   </script>
 </body>
